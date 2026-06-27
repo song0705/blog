@@ -37,13 +37,13 @@ npm run preview
 src/content/posts/first-post.mdx
 ```
 
-推荐用脚本生成正式文章文件：
+推荐用根目录命令生成正式文章文件：
 
 ```bash
-npm run new-post -- "文章标题" article-slug
+./new 文章标题
 ```
 
-默认生成 `draft: true`，不会公开发布。写完后把文章 frontmatter 改成：
+标题可以直接写中文。默认生成 `draft: true`，不会公开发布。写完后把文章 frontmatter 改成：
 
 ```yaml
 draft: false
@@ -52,7 +52,13 @@ draft: false
 如果要创建时直接发布：
 
 ```bash
-npm run new-post -- --publish "文章标题" article-slug
+./new --publish 文章标题
+```
+
+如果想指定英文 URL：
+
+```bash
+./new --slug article-slug 文章标题
 ```
 
 每篇文章需要 frontmatter：

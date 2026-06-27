@@ -1,38 +1,46 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { relative, join } from "node:path";
 
 const args = process.argv.slice(2);
-const publishIndex = args.indexOf("--publish");
-const publish = publishIndex >= 0;
+let publish = false;
+let customSlug;
+const titleParts = [];
 
-if (publish) {
-  args.splice(publishIndex, 1);
+for (let index = 0; index < args.length; index += 1) {
+  const arg = args[index];
+
+  if (arg === "--help" || arg === "-h") {
+    printHelp();
+    process.exit(0);
+  }
+
+  if (arg === "--publish") {
+    publish = true;
+    continue;
+  }
+
+  if (arg === "--slug") {
+    customSlug = args[index + 1];
+    index += 1;
+    continue;
+  }
+
+  titleParts.push(arg);
 }
 
-const [title, customSlug] = args;
+const title = titleParts.join(" ").trim();
 
 if (!title) {
-  console.error('Usage: npm run new-post -- "文章标题" optional-slug');
+  printHelp();
   process.exit(1);
 }
 
-const today = new Date().toISOString().slice(0, 10);
-const slugBase =
-  customSlug ??
-  title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") ??
-  "post";
-const slug = slugBase || "post";
-const filename = `${today}-${slug}.mdx`;
+const now = new Date();
+const today = formatDate(now);
+const fallbackSlug = `post-${formatTime(now)}`;
+const slug = slugify(customSlug ?? title) || fallbackSlug;
 const postsDir = join(process.cwd(), "src/content/posts");
-const filePath = join(postsDir, filename);
-
-if (existsSync(filePath)) {
-  console.error(`Post already exists: ${filePath}`);
-  process.exit(1);
-}
+const filePath = getAvailablePath(postsDir, today, slug);
 
 mkdirSync(postsDir, { recursive: true });
 writeFileSync(
@@ -67,5 +75,59 @@ draft: ${publish ? "false" : "true"}
 `
 );
 
-console.log(`Created ${filePath}`);
-console.log(publish ? "Status: published" : "Status: draft");
+console.log(`Created: ${relative(process.cwd(), filePath)}`);
+console.log(`Status: ${publish ? "published" : "draft"}`);
+
+if (!publish) {
+  console.log("Publish: change draft: true to draft: false, then git add/commit/push.");
+}
+
+function printHelp() {
+  console.log(`Usage:
+  ./new 文章标题
+  ./new --publish 文章标题
+  ./new --slug custom-slug 文章标题
+
+Examples:
+  ./new 我的第一篇文章
+  ./new --slug astro-notes 我对 Astro 的一点理解`);
+}
+
+function slugify(value) {
+  return value
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/['"]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatTime(date) {
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${hours}${minutes}${seconds}`;
+}
+
+function getAvailablePath(postsDir, date, slug) {
+  let suffix = "";
+  let counter = 1;
+
+  while (true) {
+    const candidate = join(postsDir, `${date}-${slug}${suffix}.mdx`);
+
+    if (!existsSync(candidate)) {
+      return candidate;
+    }
+
+    counter += 1;
+    suffix = `-${counter}`;
+  }
+}
