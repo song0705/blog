@@ -29,7 +29,33 @@ npm run preview
 
 ## 写文章
 
-文章放在 `src/content/posts/`，使用 Markdown 或 MDX。每篇文章需要 frontmatter：
+草稿放在 `writing/drafts/`。正式文章放在 `src/content/posts/`，使用 Markdown 或 MDX。
+
+当前已准备一个未发布草稿：
+
+```txt
+src/content/posts/first-post.mdx
+```
+
+推荐用脚本生成正式文章文件：
+
+```bash
+npm run new-post -- "文章标题" article-slug
+```
+
+默认生成 `draft: true`，不会公开发布。写完后把文章 frontmatter 改成：
+
+```yaml
+draft: false
+```
+
+如果要创建时直接发布：
+
+```bash
+npm run new-post -- --publish "文章标题" article-slug
+```
+
+每篇文章需要 frontmatter：
 
 ```yaml
 title: "文章标题"

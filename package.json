@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "new-post": "node scripts/new-post.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check"

@@ -9,7 +9,9 @@ const posts = await getPublishedPosts();
 
 <BaseLayout title="全部文章" description="Cian 技术博客的全部文章。">
   <PageHero eyebrow="Posts" title="全部文章" description="按发布时间倒序整理的工程笔记、系统设计和工具链实践。" />
-  <section class="post-grid post-grid--archive" aria-label="全部文章">
-    {posts.map((post) => <PostCard post={post} />)}
-  </section>
+  {posts.length > 0 ? (
+    <section class="post-grid post-grid--archive" aria-label="全部文章">
+      {posts.map((post) => <PostCard post={post} />)}
+    </section>
+  ) : <section class="empty-state empty-state--wide">暂无公开文章。</section>}
 </BaseLayout>

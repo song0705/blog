@@ -10,12 +10,14 @@ const categories = getAllCategories(posts);
 
 <BaseLayout title="栏目" description="按栏目浏览 Cian 技术博客。">
   <PageHero eyebrow="Categories" title="栏目" description="每个栏目都是一条长期写作线索。" />
-  <section class="category-list category-list--wide" aria-label="栏目列表">
-    {categories.map((category) => (
-      <a href={withBase(`categories/${encodeURIComponent(category)}/`)}>
-        <span>{category}</span>
-        <strong>{postsByCategory(posts, category).length}</strong>
-      </a>
-    ))}
-  </section>
+  {categories.length > 0 ? (
+    <section class="category-list category-list--wide" aria-label="栏目列表">
+      {categories.map((category) => (
+        <a href={withBase(`categories/${encodeURIComponent(category)}/`)}>
+          <span>{category}</span>
+          <strong>{postsByCategory(posts, category).length}</strong>
+        </a>
+      ))}
+    </section>
+  ) : <section class="empty-state empty-state--wide">暂无栏目。</section>}
 </BaseLayout>

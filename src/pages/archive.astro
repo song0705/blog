@@ -11,20 +11,22 @@ const years = Object.keys(groups).sort((a, b) => Number(b) - Number(a));
 
 <BaseLayout title="归档" description="按年份归档的 Cian 技术博客文章。">
   <PageHero eyebrow="Archive" title="归档" description="按时间回看技术判断和实践路径。" />
-  <section class="archive-list" aria-label="文章归档">
-    {years.map((year) => (
-      <div class="archive-year">
-        <h2>{year}</h2>
-        <ol>
-          {groups[year].map((post) => (
-            <li>
-              <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
-              <a href={withBase(`posts/${getPostSlug(post)}/`)}>{post.data.title}</a>
-              <span>{post.data.category}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-    ))}
-  </section>
+  {years.length > 0 ? (
+    <section class="archive-list" aria-label="文章归档">
+      {years.map((year) => (
+        <div class="archive-year">
+          <h2>{year}</h2>
+          <ol>
+            {groups[year].map((post) => (
+              <li>
+                <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+                <a href={withBase(`posts/${getPostSlug(post)}/`)}>{post.data.title}</a>
+                <span>{post.data.category}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
+    </section>
+  ) : <section class="empty-state empty-state--wide">暂无归档。</section>}
 </BaseLayout>
