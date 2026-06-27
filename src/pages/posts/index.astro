@@ -1,0 +1,15 @@
+---
+import PageHero from "../../components/PageHero.astro";
+import PostCard from "../../components/PostCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getPublishedPosts } from "../../lib/posts";
+
+const posts = await getPublishedPosts();
+---
+
+<BaseLayout title="全部文章" description="Cian 技术博客的全部文章。">
+  <PageHero eyebrow="Posts" title="全部文章" description="按发布时间倒序整理的工程笔记、系统设计和工具链实践。" />
+  <section class="post-grid post-grid--archive" aria-label="全部文章">
+    {posts.map((post) => <PostCard post={post} />)}
+  </section>
+</BaseLayout>

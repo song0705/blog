@@ -1,0 +1,14 @@
+---
+import { SITE, absoluteUrl, withBase } from "../lib/site";
+---
+
+<footer class="site-footer">
+  <div>
+    <strong>{SITE.title}</strong>
+    <p>{SITE.description}</p>
+  </div>
+  <div class="footer-links">
+    <a href={withBase("rss.xml")}>RSS</a>
+    <a href={absoluteUrl("")}>GitHub Pages</a>
+  </div>
+</footer>

@@ -1,0 +1,78 @@
+---
+import { render } from "astro:content";
+import TableOfContents from "../../components/TableOfContents.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  formatDate,
+  getAdjacentPosts,
+  getPostSlug,
+  getPublishedPosts,
+  getReadingTime,
+  type Post
+} from "../../lib/posts";
+import { withBase } from "../../lib/site";
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return posts.map((post) => ({
+    params: { slug: getPostSlug(post) },
+    props: { post, posts }
+  }));
+}
+
+type Props = {
+  post: Post;
+  posts: Post[];
+};
+
+const { post, posts } = Astro.props;
+const { Content, headings } = await render(post);
+const slug = getPostSlug(post);
+const { previous, next } = getAdjacentPosts(posts, slug);
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  image={post.data.heroImage}
+  type="article"
+>
+  <article class="article-shell">
+    <header class="article-header">
+      <p class="eyebrow">{post.data.category}</p>
+      <h1>{post.data.title}</h1>
+      <p>{post.data.description}</p>
+      <div class="post-meta article-meta">
+        <span>{formatDate(post.data.pubDate)}</span>
+        {post.data.updatedDate && <span>更新于 {formatDate(post.data.updatedDate)}</span>}
+        <span>{getReadingTime(post.body)}</span>
+      </div>
+      <div class="tag-row">
+        {post.data.tags.map((tag) => <a href={withBase(`tags/${encodeURIComponent(tag)}/`)}>#{tag}</a>)}
+      </div>
+      <img class="article-cover" src={withBase(post.data.heroImage)} alt={post.data.heroAlt} />
+    </header>
+
+    <div class="article-layout">
+      <TableOfContents headings={headings} />
+      <div class="article-content">
+        <Content />
+      </div>
+    </div>
+
+    <nav class="post-nav" aria-label="相邻文章">
+      {previous ? (
+        <a href={withBase(`posts/${getPostSlug(previous)}/`)}>
+          <span>上一篇</span>
+          <strong>{previous.data.title}</strong>
+        </a>
+      ) : <span></span>}
+      {next ? (
+        <a href={withBase(`posts/${getPostSlug(next)}/`)}>
+          <span>下一篇</span>
+          <strong>{next.data.title}</strong>
+        </a>
+      ) : <span></span>}
+    </nav>
+  </article>
+</BaseLayout>

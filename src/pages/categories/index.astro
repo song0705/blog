@@ -1,0 +1,21 @@
+---
+import PageHero from "../../components/PageHero.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllCategories, getPublishedPosts, postsByCategory } from "../../lib/posts";
+import { withBase } from "../../lib/site";
+
+const posts = await getPublishedPosts();
+const categories = getAllCategories(posts);
+---
+
+<BaseLayout title="栏目" description="按栏目浏览 Cian 技术博客。">
+  <PageHero eyebrow="Categories" title="栏目" description="每个栏目都是一条长期写作线索。" />
+  <section class="category-list category-list--wide" aria-label="栏目列表">
+    {categories.map((category) => (
+      <a href={withBase(`categories/${encodeURIComponent(category)}/`)}>
+        <span>{category}</span>
+        <strong>{postsByCategory(posts, category).length}</strong>
+      </a>
+    ))}
+  </section>
+</BaseLayout>

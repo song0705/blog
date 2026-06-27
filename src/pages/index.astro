@@ -1,0 +1,73 @@
+---
+import PostCard from "../components/PostCard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getAllCategories, getAllTags, getPublishedPosts, postsByCategory } from "../lib/posts";
+import { SITE, withBase } from "../lib/site";
+
+const posts = await getPublishedPosts();
+const featured = posts.find((post) => post.data.featured) ?? posts[0];
+const latest = posts.filter((post) => post.id !== featured?.id).slice(0, 4);
+const tags = getAllTags(posts);
+const categories = getAllCategories(posts);
+---
+
+<BaseLayout title={SITE.title} description={SITE.description}>
+  <section class="magazine-hero">
+    <div class="magazine-hero__copy">
+      <p class="eyebrow">Cian / Engineering Notes</p>
+      <h1>
+        <span>把工程判断</span>
+        <span>写成可复用的</span>
+        <span>长期资产。</span>
+      </h1>
+      <p>
+        这里记录系统设计、AI 工具链、后端实践和写作复盘。文章面向真实项目里的取舍、证据和可维护性。
+      </p>
+      <div class="hero-actions">
+        <a class="button button--primary" href={withBase("posts/")}>阅读文章</a>
+        <a class="button button--ghost" href={withBase("about/")}>了解 Cian</a>
+      </div>
+    </div>
+    {featured && (
+      <div class="magazine-hero__feature">
+        <PostCard post={featured} variant="feature" />
+      </div>
+    )}
+  </section>
+
+  <section class="section-grid section-grid--latest" aria-labelledby="latest-title">
+    <div class="section-heading">
+      <p class="eyebrow">Latest</p>
+      <h2 id="latest-title">最新文章</h2>
+    </div>
+    <div class="post-grid">
+      {latest.map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+
+  <section class="index-panels" aria-label="内容索引">
+    <div class="index-panel">
+      <div class="section-heading">
+        <p class="eyebrow">Categories</p>
+        <h2>栏目</h2>
+      </div>
+      <div class="category-list">
+        {categories.map((category) => (
+          <a href={withBase(`categories/${encodeURIComponent(category)}/`)}>
+            <span>{category}</span>
+            <strong>{postsByCategory(posts, category).length}</strong>
+          </a>
+        ))}
+      </div>
+    </div>
+    <div class="index-panel index-panel--dark">
+      <div class="section-heading">
+        <p class="eyebrow">Tags</p>
+        <h2>标签索引</h2>
+      </div>
+      <div class="tag-cloud">
+        {tags.map((tag) => <a href={withBase(`tags/${encodeURIComponent(tag)}/`)}>#{tag}</a>)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,25 @@
+---
+import PageHero from "../components/PageHero.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE } from "../lib/site";
+---
+
+<BaseLayout title="关于" description={`关于 ${SITE.title}。`}>
+  <PageHero eyebrow="About" title="关于 Cian" description="这个博客用于沉淀工程经验、设计判断和工具链实践。" />
+  <section class="about-layout">
+    <div class="about-copy">
+      <h2>写作原则</h2>
+      <p>
+        文章优先记录真实问题里的约束、方案和验证结果。比起追逐术语，这里更关心一个工程选择为什么成立，以及它在什么条件下会失效。
+      </p>
+      <h2>长期栏目</h2>
+      <p>
+        当前重点栏目包括系统设计、AI 工具链和写作系统。后续可以继续扩展为数据库、前端工程、DevOps 或开源项目复盘。
+      </p>
+    </div>
+    <aside class="about-card">
+      <strong>Cian</strong>
+      <p>工程实践记录者。关注可维护系统、AI 辅助开发和长期知识管理。</p>
+    </aside>
+  </section>
+</BaseLayout>

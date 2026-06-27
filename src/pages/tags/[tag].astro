@@ -1,0 +1,23 @@
+---
+import PageHero from "../../components/PageHero.astro";
+import PostCard from "../../components/PostCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllTags, getPublishedPosts, postsByTag } from "../../lib/posts";
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return getAllTags(posts).map((tag) => ({
+    params: { tag },
+    props: { tag, posts: postsByTag(posts, tag) }
+  }));
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<BaseLayout title={`标签：${tag}`} description={`浏览标签 ${tag} 下的文章。`}>
+  <PageHero eyebrow="Tag" title={`#${tag}`} description={`共 ${posts.length} 篇文章。`} />
+  <section class="post-grid post-grid--archive" aria-label={`标签 ${tag} 下的文章`}>
+    {posts.map((post) => <PostCard post={post} />)}
+  </section>
+</BaseLayout>

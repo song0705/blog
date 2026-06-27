@@ -1,0 +1,23 @@
+---
+import PageHero from "../../components/PageHero.astro";
+import PostCard from "../../components/PostCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllCategories, getPublishedPosts, postsByCategory } from "../../lib/posts";
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return getAllCategories(posts).map((category) => ({
+    params: { category },
+    props: { category, posts: postsByCategory(posts, category) }
+  }));
+}
+
+const { category, posts } = Astro.props;
+---
+
+<BaseLayout title={`栏目：${category}`} description={`浏览 ${category} 栏目下的文章。`}>
+  <PageHero eyebrow="Category" title={category} description={`共 ${posts.length} 篇文章。`} />
+  <section class="post-grid post-grid--archive" aria-label={`${category} 栏目下的文章`}>
+    {posts.map((post) => <PostCard post={post} />)}
+  </section>
+</BaseLayout>
